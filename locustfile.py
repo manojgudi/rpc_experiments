@@ -196,6 +196,54 @@ if os.getenv("ENABLE_COAP", "1") == "1":
     class COAPUser(CoapUser):
         abstract = False
 
+# --------------------------- RESTful JSON API User (HTTP) --------------------------- #
+# Matches your client that POSTs to /externalLights with {"carName": CAR_NAME}
+# and expects JSON back. Uses a persistent requests.Session for keep-alive.
+class RestApiUser(User):
+    wait_time = between(0.01, 0.05)
+    abstract = True
+    weight = int(os.getenv("REST_WEIGHT", "1"))
+
+    def on_start(self):
+        self.url = os.getenv("REST_URL", "http://localhost:5000/externalLights")
+        self.session = requests.Session()
+
+    @task
+    def external_lights(self):
+        start = time.monotonic()
+        try:
+            resp = self.session.post(self.url, json={"carName": CAR_NAME}, timeout=10)
+            elapsed_ms = (time.monotonic() - start) * 1000
+            ok = resp.ok
+            try:
+                _ = resp.json()
+            except Exception:
+                ok = False
+            events.request.fire(
+                request_type="REST",
+                name="externalLights",
+                response_time=elapsed_ms,
+                response_length=len(resp.content),
+                response=resp,
+                context={},
+                exception=None if ok else Exception(f"Bad status or JSON: {resp.status_code}"),
+            )
+        except Exception as e:
+            elapsed_ms = (time.monotonic() - start) * 1000
+            events.request.fire(
+                request_type="REST",
+                name="externalLights",
+                response_time=elapsed_ms,
+                response_length=0,
+                response=None,
+                context={},
+                exception=e,
+            )
+
+if os.getenv("ENABLE_REST", "1") == "1":
+    class RESTUser(RestApiUser):
+        abstract = False
+
 # --------------------------- Tips for analysis --------------------------- #
 # After a run, Locust provides p50/p90/p95/p99 latencies per request_type.
 # For a paper, export stats CSV (--csv) and report medians and tail latencies.

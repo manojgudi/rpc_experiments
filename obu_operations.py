@@ -50,7 +50,7 @@ def lightStatus():
 
 
 def shortTask():
-    #time.sleep(0.1)
+    time.sleep(0.1)
     status = lightStatus()
     return status
 
