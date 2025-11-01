@@ -1,6 +1,7 @@
 werkzeug
+flask
 json-rpc
 requests
 aiocoap
-cbor2
+cbor2==4.1.2
 locust
