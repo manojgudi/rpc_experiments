@@ -2,8 +2,12 @@ import asyncio
 import aiocoap.resource as resource
 import aiocoap
 from obu_operations import CAR_NAME, FETCH_SID, shortTask, returnCCOutput, returnYANGOutput
-import pycoreconf
 import cbor2
+
+
+"""
+# If you can install pycoreconf remove the comments and manual stencil
+import pycoreconf
 
 sidFile = "./yang/car-model@unknown.sid"
 ccm = pycoreconf.CORECONFModel(sidFile, model_description_file=None)
@@ -11,7 +15,10 @@ ccm = pycoreconf.CORECONFModel(sidFile, model_description_file=None)
 stencilPayload = returnYANGOutput(-1)
 stencilPayload = ccm.toCORECONFFromJSON(stencilPayload)
 stencilPayload = cbor2.loads(stencilPayload)
+"""
 
+# Incase cannot install pycoreconf
+stencilPayload = {60001: {4: {1: {2: 'roadrunner', 1: -1}}}}
 
 class FetchDemoResource(resource.Resource):
     async def render_fetch(self, request: aiocoap.Message) -> aiocoap.Message:
