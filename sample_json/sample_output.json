@@ -1,0 +1,10 @@
+{
+  "fetch": {
+    "output" :  {
+    "carStatus": {
+      "name": "roadrunner",
+      "exteriorLight": 
+        "leftTurnSignalOn"
+    }}
+  }
+}

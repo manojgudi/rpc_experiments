@@ -1,0 +1,28 @@
+module cam {
+    namespace "urn:example:params:xml:ns:yang:cam";
+    prefix camPrefix;
+
+    import its-pdu-header {
+        prefix itsPduHeader;
+    }
+
+    import cam-payload {
+        prefix camPayload;
+    }
+
+    container header {
+        uses itsPduHeader:its-pdu-header {
+            refine messageID {
+                default "cam";
+            }
+
+            refine protocolVersion {
+                default 2;
+            }
+        }
+    }
+
+    container cam {
+        uses camPayload:cam-payload;
+    }
+}

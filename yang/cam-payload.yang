@@ -1,0 +1,1112 @@
+module cam-payload {
+    namespace "urn:example:params:xml:ns:yang:cam-payload";
+    prefix "camPayload";
+
+    grouping cam-payload {
+        description
+          "Containing CAM Payload data";
+
+        leaf generationDeltaTime {
+            type GenerationDeltaTime;
+        }
+
+        container camParameters {
+            container basicContainer {
+                uses basic-container;
+            }
+
+            container highFrequencyContainer {
+                choice high-frequency-choice {
+                    case basicVehicleContainerHighFrequency {
+                        container basicVehicleContainerHighFrequency {
+                            uses basic-vehicle-container-high-frequency;
+                        }
+                    }
+                    case rsuContainerHighFrequency {
+                        container rsuContainerHighFrequency {
+                            uses rsu-container-high-frequency;
+                        }
+                    }
+                }
+            }
+
+            container lowFrequencyContainer {
+                choice low-frequency-choice {
+                    case basicVehicleContainerLowFrequency {
+                        container basicVehicleContainerLowFrequency {
+                            uses basic-vehicle-container-low-frequency;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    typedef GenerationDeltaTime {
+        type uint16;
+        description
+          "Holds TimestampIts modulo of 65536";
+    }
+
+    grouping basic-container {
+        description
+          "Basic container which is extensible";
+
+        leaf stationType {
+            type TrafficParticipantType;
+        }
+
+        container referencePosition {
+            uses reference-position-with-confidence;
+        }
+    }
+
+    grouping reference-position-with-confidence {
+        description
+          "ReferencePositionWithConfidence not found in json example";
+        leaf latitude {
+            type Latitude;
+        }
+        leaf longitude {
+            type Longitude;
+        }
+
+        container positionConfidenceEllipse {
+            uses pos-confidence-ellipse;
+        }
+
+        container altitude {
+            uses altitude;
+        }
+    }
+
+    typedef TrafficParticipantType {
+        type union {
+            type uint8{
+                range "0..255";
+            }
+            type enumeration {
+                enum unknown {
+                    value 0;
+                }
+                enum pedestrian {
+                    value 1;
+                }
+                enum cyclist {
+                    value 2;
+                }
+                enum moped {
+                    value 3;
+                }
+                enum motorcycle {
+                    value 4;
+                }
+                enum passengerCar {
+                    value 5;
+                }
+                enum bus {
+                    value 6;
+                }
+                enum lightTruck {
+                    value 7;
+                }
+                enum heavyTruck {
+                    value 8;
+                }
+                enum trailer {
+                    value 9;
+                }
+                enum specialVehicle {
+                    value 10;
+                }
+                enum tram {
+                    value 11;
+                }
+                enum lightVruVehicle {
+                    value 12;
+                }
+                enum animal {
+                    value 13;
+                }
+                enum agricultural {
+                    value 14;
+                }
+                enum roadSideUnit {
+                    value 15;
+                }
+            }
+        }
+    }
+
+    typedef Latitude {
+        type union {
+            type int32 {
+                range "-900000000..900000000";
+            }
+            type enumeration {
+                enum unavailable {
+                    value 900000001;
+                    description
+                      "Special value indicating that the latitude is unavailable.";
+                }
+            }
+        }
+    }
+
+    typedef Longitude {
+        type union {
+            type int32 {
+                range "-1799999999..1800000000";
+            }
+            type enumeration {
+                enum valueNotUsed {
+                    value -1800000000;
+                    description
+                      "Special value indicating that the longitude is not used.";
+                }
+                enum unavailable {
+                    value 1800000001;
+                    description
+                      "Special value indicating that the longitude is unavailable.";
+                }
+            }
+        }
+    }
+
+    grouping position-confidence-ellipse {
+        leaf semiMajorAxis {
+            type SemiAxisLength;
+        }
+        leaf semiMinorAxis {
+            type SemiAxisLength;
+        }
+        leaf semiMajorAxisOrientation {
+            type Wgs84AngleValue;
+        }
+    }
+
+    grouping pos-confidence-ellipse {
+        leaf semiMajorConfidence {
+            type SemiAxisLength;
+        }
+        leaf semiMinorConfidence {
+            type SemiAxisLength;
+        }
+        leaf semiMajorOrientation {
+            type HeadingValue;
+        }
+    }
+
+    typedef SemiAxisLength {
+        type union {
+            type uint16 {
+                range "1..4093";
+            }
+            type enumeration {
+                enum doNotUse {
+                    value 0;
+                    description
+                      "Special value indicating that the semi-axis length is not to be used.";
+                }
+                enum outOfRange {
+                    value 4094;
+                    description
+                      "Special value indicating that the semi-axis length is out of range.";
+                }
+                enum unavailable {
+                    value 4095;
+                    description
+                      "Special value indicating that the semi-axis length is unavailable.";
+                }
+            }
+        }
+    }
+
+    typedef Wgs84AngleValue {
+        type union{
+            type uint16{
+                range "0..3601";
+            }
+            type enumeration {
+                enum wgs84North {
+                    value 0;
+                }
+                enum wgs84East {
+                    value 900;
+                }
+                enum wgs84South {
+                    value 1800;
+                }
+                enum wgs84West {
+                    value 2700;
+                }
+                enum doNotUse {
+                    value 3600;
+                }
+                enum unavailable {
+                    value 3601;
+                }
+            }
+        }
+    }
+
+    grouping altitude {
+        leaf altitudeValue {
+            type AltitudeValue;
+        }
+
+        leaf altitudeConfidence {
+            type AltitudeConfidence;
+        }
+    }
+
+    typedef AltitudeValue {
+        type union {
+            type int32 {
+                range "-100000..800000";
+            }
+            type enumeration {
+                enum negativeOutOfRange {
+                    value -100000;
+                    description
+                      "Special value indicating altitude is negative out of range.";
+                }
+                enum positiveOutOfRange {
+                    value 800000;
+                    description
+                      "Special value indicating altitude is positive out of range.";
+                }
+                enum unavailable {
+                    value 800001;
+                    description
+                      "Special value indicating altitude is unavailable.";
+                }
+            }
+        }
+    }
+
+    typedef AltitudeConfidence {
+        type enumeration {
+            enum alt-000-01 {
+                value 0;
+            }
+            enum alt-000-02 {
+                value 1;
+            }
+            enum alt-000-05 {
+                value 2;
+            }
+            enum alt-000-10 {
+                value 3;
+            }
+            enum alt-000-20 {
+                value 4;
+            }
+            enum alt-000-50 {
+                value 5;
+            }
+            enum alt-001-00 {
+                value 6;
+            }
+            enum alt-002-00 {
+                value 7;
+            }
+            enum alt-005-00 {
+                value 8;
+            }
+            enum alt-010-00 {
+                value 9;
+            }
+            enum alt-020-00 {
+                value 10;
+            }
+            enum alt-050-00 {
+                value 11;
+            }
+            enum alt-100-00 {
+                value 12;
+            }
+            enum alt-200-00 {
+                value 13;
+            }
+            enum outOfRange {
+                value 14;
+            }
+            enum unavailable {
+                value 15;
+            }
+        }
+    }
+
+    grouping basic-vehicle-container-high-frequency {
+        container heading {
+            uses heading;
+        }
+        container speed {
+            uses speed;
+        }
+
+        leaf driveDirection {
+            type DriveDirection;
+        }
+
+        container vehicleLength {
+            uses vehicle-length;
+        }
+
+        leaf vehicleWidth {
+            type VehicleWidth;
+        }
+
+        container longitudinalAcceleration {
+            uses acceleration-component;
+        }
+
+        container curvature {
+            uses curvature;
+        }
+
+        leaf curvatureCalculationMode {
+            type CurvatureCalculationMode;
+        }
+
+        leaf accelerationControl {
+            type AccelerationControl;
+            mandatory false;
+        }
+
+        container yawRate {
+            uses yaw-rate;
+        }
+    }
+
+    grouping basic-vehicle-container-low-frequency {
+
+        leaf vehicleRole {
+            type VehicleRole;
+        }
+
+        leaf exteriorLights {
+            type ExteriorLights;
+        }
+
+        list pathHistory {
+            key pathDeltaTime;
+            max-elements 40;
+            uses path-point;
+        }
+    }
+
+    typedef VehicleRole {
+        type enumeration {
+            enum default {
+                value 0;
+            }
+            enum publicTransport {
+                value 1;
+            }
+            enum specialTransport {
+                value 2;
+            }
+            enum dangerousGoods {
+                value 3;
+            }
+            enum roadWork {
+                value 4;
+            }
+            enum rescue {
+                value 5;
+            }
+            enum emergency {
+                value 6;
+            }
+            enum safetyCar {
+                value 7;
+            }
+            enum agriculture {
+                value 8;
+            }
+            enum commercial {
+                value 9;
+            }
+            enum military {
+                value 10;
+            }
+            enum roadOperator {
+                value 11;
+            }
+            enum taxi {
+                value 12;
+            }
+            enum reserved1 {
+                value 13;
+            }
+            enum reserved2 {
+                value 14;
+            }
+            enum reserved3 {
+                value 15;
+            }
+        }
+    }
+
+    typedef ExteriorLights {
+        type bits {
+            bit lowBeamHeadlightsOn {
+                position 0;
+            }
+            bit highBeamHeadlightsOn {
+                position 1;
+            }
+            bit leftTurnSignalOn {
+                position 2;
+            }
+            bit rightTurnSignalOn {
+                position 3;
+            }
+            bit daytimeRunningLightsOn {
+                position 4;
+            }
+            bit reverseLightOn {
+                position 5;
+            }
+            bit fogLightOn {
+                position 6;
+            }
+            bit parkingLightsOn {
+                position 7;
+            }
+        }
+    }
+
+    grouping path-point {
+        container pathPosition {
+            uses delta-reference-position;
+        }
+
+        leaf pathDeltaTime {
+            type PathDeltaTime;
+            mandatory false;
+        }
+    }
+
+    typedef PathDeltaTime {
+        type union {
+            type uint16 {
+                range "2..65535";
+            }
+            type enumeration {
+                enum tenMilliSecondsInPast {
+                    value 1;
+                    description
+                      "Represents 10 milliseconds in the past.";
+                }
+            }
+        }
+        description
+          "Type for PathDeltaTime, representing a time delta with a specific value for 10 milliseconds in the past.";
+    }
+
+    grouping delta-reference-position {
+        leaf deltaLatitude {
+            type DeltaLatitude;
+        }
+        leaf deltaLongitude {
+            type DeltaLongitude;
+        }
+        leaf deltaAltitude {
+            type DeltaAltitude;
+        }
+    }
+
+    typedef DeltaLatitude {
+        type union {
+            type int32 {
+                range "-131071..131071";
+            }
+            type enumeration {
+                enum oneMicrodegreeNorth {
+                    value 10;
+                    description
+                      "Represents a change of one microdegree north.";
+                }
+                enum oneMicrodegreeSouth {
+                    value -10;
+                    description
+                      "Represents a change of one microdegree south.";
+                }
+                enum unavailable {
+                    value 131072;
+                    description
+                      "Represents an unavailable latitude value.";
+                }
+            }
+        }
+        description
+          "Type for DeltaLatitude, representing a latitude change with specific values for one microdegree north, one microdegree south, and an unavailable state.";
+    }
+
+    typedef DeltaLongitude {
+        type union {
+            type int32 {
+                range "-131071..131071";
+            }
+            type enumeration {
+                enum oneMicrodegreeEast {
+                    value 10;
+                    description
+                      "Represents a change of one microdegree east.";
+                }
+                enum oneMicrodegreeWest {
+                    value -10;
+                    description
+                      "Represents a change of one microdegree west.";
+                }
+                enum unavailable {
+                    value 131072;
+                    description
+                      "Represents an unavailable longitude value.";
+                }
+            }
+        }
+        description
+          "Type for DeltaLongitude, representing a longitude change with specific values for one microdegree east, one microdegree west, and an unavailable state.";
+    }
+
+    typedef DeltaAltitude {
+        type union {
+            type int32 {
+                range "-12700..12700";
+            }
+            type enumeration {
+                enum oneCentimeterUp {
+                    value 1;
+                    description
+                      "Represents a change of one centimeter upwards.";
+                }
+                enum oneCentimeterDown {
+                    value -1;
+                    description
+                      "Represents a change of one centimeter downwards.";
+                }
+                enum unavailable {
+                    value 12800;
+                    description
+                      "Represents an unavailable altitude value.";
+                }
+            }
+        }
+        description
+          "Type for DeltaAltitude, representing an altitude change with specific values for one centimeter up, one centimeter down, and an unavailable state.";
+    }
+
+    grouping heading {
+        leaf headingValue {
+            type HeadingValue;
+        }
+
+        leaf headingConfidence {
+            type HeadingConfidence;
+        }
+    }
+
+    typedef HeadingValue {
+        type union {
+            type uint16{
+                range "0..3601";
+            }
+            type enumeration {
+                enum wgs84North {
+                    value 0;
+                    description
+                      "Heading value indicating WGS84 North.";
+                }
+                enum wgs84East {
+                    value 900;
+                    description
+                      "Heading value indicating WGS84 East.";
+                }
+                enum wgs84South {
+                    value 1800;
+                    description
+                      "Heading value indicating WGS84 South.";
+                }
+                enum wgs84West {
+                    value 2700;
+                    description
+                      "Heading value indicating WGS84 West.";
+                }
+                enum doNotUse {
+                    value 3600;
+                    description
+                      "Special value indicating heading should not be used.";
+                }
+                enum unavailable {
+                    value 3601;
+                    description
+                      "Special value indicating heading is unavailable.";
+                }
+            }
+        }
+    }
+
+    typedef HeadingConfidence {
+        type union{
+            type int8{
+                range "1..127";
+            }
+            type enumeration {
+                enum equalOrWithinZeroPointOneDegree {
+                    value 1;
+                    description
+                      "Confidence is equal to or within 0.1 degrees.";
+                }
+                enum equalOrWithinOneDegree {
+                    value 10;
+                    description
+                      "Confidence is equal to or within 1 degree.";
+                }
+                enum outOfRange {
+                    value 126;
+                    description
+                      "The heading confidence is out of the measurable range.";
+                }
+                enum unavailable {
+                    value 127;
+                    description
+                      "The heading confidence is unavailable.";
+                }
+            }
+        }
+        description
+          "Type for HeadingConfidence, representing confidence levels for heading measurement.";
+    }
+
+    grouping speed {
+        leaf speedValue {
+            type SpeedValue;
+        }
+
+        leaf speedConfidence {
+            type SpeedConfidence;
+        }
+    }
+
+    typedef SpeedValue {
+        type union {
+            type int16 {
+                range "0..16382";
+            }
+            type enumeration {
+                enum standstill {
+                    value 0;
+                    description
+                      "Special value indicating that the speed is standstill.";
+                }
+                enum outOfRange {
+                    value 16382;
+                    description
+                      "Special value indicating that the speed is out of range.";
+                }
+                enum unavailable {
+                    value 16383;
+                    description
+                      "Special value indicating that the speed is unavailable.";
+                }
+            }
+        }
+    }
+
+    typedef SpeedConfidence {
+        type union {
+            type uint8{
+                range "1..127";
+            }
+            type enumeration {
+                enum outOfRange {
+                    value 126;
+                }
+                enum unavailable {
+                    value 128;
+                }
+            }
+        }
+    }
+
+    typedef DriveDirection {
+        type enumeration {
+            enum forward {
+                value 0;
+            }
+            enum backward {
+                value 1;
+            }
+            enum unavailable {
+                value 2;
+            }
+        }
+    }
+
+    grouping vehicle-length {
+        leaf vehicleLengthValue {
+            type VehicleLengthValue;
+        }
+
+        leaf vehicleLengthConfidenceIndication {
+            type VehicleLengthConfidenceIndication;
+        }
+    }
+
+    typedef VehicleLengthValue {
+        type union {
+            type uint16 {
+                range "0..1023";
+            }
+            type enumeration {
+                enum outOfRange {
+                    value 1022;
+                }
+                enum unavailable {
+                    value 1023;
+                }
+            }
+        }
+    }
+
+    typedef VehicleLengthConfidenceIndication {
+        type enumeration {
+            enum noTrailerPresent {
+                value 0;
+            }
+            enum trailerPresentWithKnownLength {
+                value 1;
+            }
+            enum trailerPresentWithUnknownLength {
+                value 2;
+            }
+            enum trailerPresenceIsUnknown {
+                value 3;
+            }
+            enum unavailable {
+                value 4;
+            }
+        }
+    }
+
+    typedef VehicleWidth {
+        type union{
+            type uint8{
+                range "1..62";
+            }
+            type enumeration {
+                enum outOfRange {
+                    value 61;
+                }
+                enum unavailable {
+                    value 62;
+                }
+            }
+        }
+    }
+
+    grouping acceleration-component {
+        leaf longitudinalAccelerationValue {
+            type LongitudinalAccelerationValue;
+        }
+
+        leaf longitudinalAccelerationConfidence {
+            type AccelerationConfidence;
+        }
+    }
+
+    typedef AccelerationValue {
+        type union{
+            type int16{
+                range "-160..161";
+            }
+            type enumeration {
+                enum negativeOutOfRange {
+                    value -160;
+                }
+                enum positiveOutOfRange {
+                    value 160;
+                }
+                enum unavailable {
+                    value 161;
+                }
+            }
+        }
+    }
+
+    typedef LongitudinalAccelerationValue {
+        type union{
+            type int16{
+                range "-160..161";
+            }
+            type enumeration {
+                enum pointOneMeterPerSecSquaredForward {
+                    value 1;
+                }
+                enum pointOneMeterPerSecSquaredBackward {
+                    value -1;
+                }
+                enum unavailable {
+                    value 161;
+                }
+            }
+        }
+    }
+
+    typedef AccelerationControl {
+        type bits {
+            bit brakePedalEngaged {
+                position 0;
+                description
+                  "Indicates that the brake pedal is engaged.";
+            }
+            bit gasPedalEngaged {
+                position 1;
+                description
+                  "Indicates that the gas pedal is engaged.";
+            }
+            bit emergencyBrakeEngaged {
+                position 2;
+                description
+                  "Indicates that the emergency brake is engaged.";
+            }
+            bit collisionWarningEngaged {
+                position 3;
+                description
+                  "Indicates that the collision warning system is engaged.";
+            }
+            bit accEngaged {
+                position 4;
+                description
+                  "Indicates that the adaptive cruise control (ACC) is engaged.";
+            }
+            bit cruiseControlEngaged {
+                position 5;
+                description
+                  "Indicates that the cruise control is engaged.";
+            }
+            bit speedLimiterEngaged {
+                position 6;
+                description
+                  "Indicates that the speed limiter is engaged.";
+            }
+        }
+    }
+    typedef AccelerationConfidence {
+        type union{
+            type uint8{
+                range "0..102";
+            }
+            type enumeration {
+                enum pointOneMeterPerSecSquared {
+                    value 1;
+                }
+                enum outOfRange {
+                    value 101;
+                }
+                enum unavailable {
+                    value 102;
+                }
+            }
+        }
+    }
+
+    grouping curvature {
+        leaf curvatureValue {
+            type CurvatureValue;
+        }
+        leaf curvatureConfidence {
+            type CurvatureConfidence;
+        }
+    }
+
+    typedef CurvatureValue {
+        type union{
+            type int16{
+                range "-1023..1023";
+            }
+            type enumeration {
+                enum outOfRangeNegative {
+                    value -1023;
+                }
+                enum outOfRangePositive {
+                    value 1022;
+                }
+                enum unavailable {
+                    value 1023;
+                }
+                enum straight {
+                    value 0;
+                }
+            }
+        }
+    }
+
+    typedef CurvatureConfidence {
+        type enumeration {
+            enum onePerMeter-0-00002 {
+                value 0;
+            }
+            enum onePerMeter-0-0001 {
+                value 1;
+            }
+            enum onePerMeter-0-0005 {
+                value 2;
+            }
+            enum onePerMeter-0-002 {
+                value 3;
+            }
+            enum onePerMeter-0-01 {
+                value 4;
+            }
+            enum onePerMeter-0-1 {
+                value 5;
+            }
+            enum outOfRange {
+                value 6;
+            }
+            enum unavailable {
+                value 7;
+            }
+        }
+    }
+
+    typedef CurvatureCalculationMode {
+        type enumeration {
+            enum yawRateUsed {
+                value 0;
+            }
+            enum yawRateNotUsed {
+                value 1;
+            }
+            enum unavailable {
+                value 2;
+            }
+        }
+    }
+
+    grouping yaw-rate {
+        leaf yawRateValue {
+            type YawRateValue;
+        }
+        leaf yawRateConfidence {
+            type YawRateConfidence;
+        }
+    }
+
+    typedef YawRateValue {
+        type union{
+            type int16{
+                range "-32766..32767";
+            }
+            type enumeration {
+                enum negativeOutOfRange {
+                    value -32766;
+                }
+                enum positiveOutOfRange {
+                    value 32766;
+                }
+                enum unavailable {
+                    value 32767;
+                }
+            }
+        }
+    }
+
+    typedef YawRateConfidence {
+        type enumeration {
+            enum degSec-000-01 {
+                value 0;
+            }
+            enum degSec-000-05 {
+                value 1;
+            }
+            enum degSec-000-10 {
+                value 2;
+            }
+            enum degSec-001-00 {
+                value 3;
+            }
+            enum degSec-005-00 {
+                value 4;
+            }
+            enum degSec-010-00 {
+                value 5;
+            }
+            enum degSec-100-00 {
+                value 6;
+            }
+            enum outOfRange {
+                value 7;
+            }
+            enum unavailable {
+                value 8;
+            }
+        }
+    }
+
+    grouping rsu-container-high-frequency {
+        list protectedCommunicationZonesRsu {
+            key expiryTime;
+            max-elements 16;
+            uses protected-communication-zone;
+        }
+    }
+
+    grouping protected-communication-zone {
+        leaf protectedZoneType {
+            type ProtectedZoneType;
+        }
+        leaf expiryTime {
+            type TimestampIts;
+            mandatory false;
+        }
+        leaf protectedZoneLatitude {
+            type Latitude;
+        }
+        leaf protectedZoneLongitude {
+            type Longitude;
+        }
+        leaf protectedZoneRadius {
+            type ProtectedZoneRadius;
+            mandatory false;
+        }
+        leaf protectedZoneId {
+            type ProtectedZoneId;
+            mandatory false;
+        }
+    }
+
+    typedef ProtectedZoneType {
+        type enumeration {
+            enum permanentCenDsrcTolling {
+                value 0;
+            }
+            enum temporaryCenDsrcTolling {
+                value 1;
+            }
+        }
+    }
+
+    typedef TimestampIts {
+        type uint64{
+            range "0..4398046511103";
+        }
+    }
+
+    typedef ProtectedZoneRadius {
+        type uint8{
+            range "1..255";
+        }
+    }
+
+    typedef ProtectedZoneId {
+        type uint32{
+            range "0..134217727";
+        }
+    }
+}

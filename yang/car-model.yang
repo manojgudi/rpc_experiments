@@ -1,0 +1,45 @@
+
+module car-model {
+  yang-version "1.1";
+  namespace "http://carmodel.in";
+  prefix "car1";
+  
+
+  import cam-payload{
+    prefix camPayload;
+  }
+
+ grouping carState{
+    leaf name {
+        type "string";    
+    }
+    
+    leaf exteriorLight {
+        type camPayload:ExteriorLights;
+     }
+
+
+  }
+
+    /*RPCs */
+
+    rpc fetch{
+        input{
+
+           container carDetails{
+                leaf name{
+                    type string ;
+                    description "Name of Car whose status you need";
+                    mandatory true;
+                }
+
+           }
+        }
+        output{
+            container carStatus{
+                config "false" ;
+                 uses carState;
+                }
+            }
+     }
+}

@@ -1,0 +1,70 @@
+{
+  "assignment-range": [
+    {
+      "entry-point": 60000,
+      "size": 300
+    }
+  ],
+  "module-name": "car-model",
+  "module-revision": "unknown",
+  "item": [
+    {
+      "namespace": "module",
+      "identifier": "car-model",
+      "status": "unstable",
+      "sid": 60000
+    },
+    {
+      "namespace": "data",
+      "identifier": "/car-model:fetch",
+      "status": "unstable",
+      "sid": 60001
+    },
+    {
+      "namespace": "data",
+      "identifier": "/car-model:fetch/input",
+      "status": "unstable",
+      "sid": 60002
+    },
+    {
+      "namespace": "data",
+      "identifier": "/car-model:fetch/input/carDetails",
+      "status": "unstable",
+      "sid": 60003
+    },
+    {
+      "namespace": "data",
+      "identifier": "/car-model:fetch/input/carDetails/name",
+      "status": "unstable",
+      "sid": 60004,
+      "type": "string"
+    },
+    {
+      "namespace": "data",
+      "identifier": "/car-model:fetch/output",
+      "status": "unstable",
+      "sid": 60005
+    },
+    {
+      "namespace": "data",
+      "identifier": "/car-model:fetch/output/carStatus",
+      "status": "unstable",
+      "sid": 60006
+    },
+    {
+      "namespace": "data",
+      "identifier": "/car-model:fetch/output/carStatus/exteriorLight",
+      "status": "unstable",
+      "sid": 60007,
+      "type": "camPayload:ExteriorLights"
+    },
+    {
+      "namespace": "data",
+      "identifier": "/car-model:fetch/output/carStatus/name",
+      "status": "unstable",
+      "sid": 60008,
+      "type": "string"
+    }
+  ],
+  "key-mapping": {}
+}

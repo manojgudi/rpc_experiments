@@ -1,0 +1,6 @@
+werkzeug
+json-rpc
+requests
+aiocoap
+cbor2
+locust
